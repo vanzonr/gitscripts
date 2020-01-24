@@ -1,0 +1,22 @@
+#!/bin/bash
+#
+# Usage: zip2git ZIPFILE [REPODIR]
+#
+# The ZIPFILE should be the zipped up .git directory of a repository,
+# like it is when it is created with git2zip.  If REPODIR is given,
+# that directory is created and the repository is unzipped into it.
+# If REPODIR is not given, a directory is created for it, with the
+# name of the ZIPFILE without the .zip extension.
+# 
+set -e
+zipfile="${1-}"
+if ! [ -f "${zipfile}" ]; then
+    echo "Error: Zip file '${zipfile}' not found." 1>&2
+    exit 1
+fi
+name=${zipfile%*.zip}
+repodir=${2:-$(basename ${name// /})}
+mkdir "$repodir"
+unzip -qd "$repodir" "$zipfile"
+cd "$repodir" && git reset --hard > /dev/null
+echo "git repository created in directory '${repodir}'."

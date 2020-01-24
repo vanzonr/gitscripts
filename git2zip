@@ -1,0 +1,23 @@
+#!/bin/bash
+#
+# Usage: git2zip [REPODIR]
+#
+# Creates a zip file of the .git directory of a git repository.
+#
+# The REPODIR directory must contain a .git subdirectory, which is the
+# thing that is zipped up. If no REPODIR is give, uses the current dir.
+# Creates a zip file in the current directory with the name REPODIR.zip.
+#
+set -e
+repodir="${1:-.}"
+gitdir="${repodir}/.git"
+if ! [ -d "${gitdir}" ]; then
+    echo "Error: No git repository found in '${gitdir}'" 1>&2
+    exit 1
+fi
+zipname="${PWD}"/$(basename $(dirname $(readlink -f "${gitdir}"))).zip
+gitparent=$(dirname "${gitdir}")
+gitname=$(basename "${gitdir}")
+cd "${gitparent}"
+rm -f "${zipname}" && zip -qr "${zipname}" "${gitname}" && echo "${zipname}" created.
+
