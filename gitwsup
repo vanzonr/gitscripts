@@ -1,0 +1,21 @@
+#!/bin/bash
+#
+# Usage: gitwsup [REPODIR]
+#
+# Bunch of git commands to give current state of branches, last commit
+# and remote repos.
+#
+set -e
+repodir="${1:-.}"
+gitdir="${repodir}/.git"
+if ! [ -d "${gitdir}" ]; then
+    echo "Error: No git repository found in '${gitdir}'" 1>&2
+    exit 1
+fi
+
+cd $repodir
+
+git branch -v
+echo -n *\ ;git log -1|grep Date
+git status|sed -n 1,/Untracked/p|head -n-1
+git remote -v
